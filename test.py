@@ -1,1 +1,1 @@
-Das ist ein test
+print ("Das ist ein test") 
