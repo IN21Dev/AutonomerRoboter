@@ -3,6 +3,7 @@
 void setup(){
   Robot.begin();
   Serial.begin(9600);
+  Robot.setMode(MODE_SIMPLE);
 }
 void loop(){
 Serial.printIn(RobotkeyboardRead());
