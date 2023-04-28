@@ -22,6 +22,9 @@ MeMegaPiDCMotor motor3(PORT3B);
 //Motor Greifer
 MeMegaPiDCMotor motor4(PORT4B);
 
+// Black White Sensor 
+MeLineFollower lineFinder(PORT_5);
+
 void setup()
 {
   //Serial und Wifi ini
@@ -45,6 +48,8 @@ void loop()
     Serial.println(inDat);
   }
 
+
+  //Random start fix
   Serial.println(inDat);
   
   //Zurück senden über Serial 
@@ -76,7 +81,7 @@ void loop()
       motor2.stop();
       motor3.stop();
       Serial.println("Vorwärts gestoppt");   
-      delay(10000);
+      delay(3000);
     }
     
    // Rückwärts Wert = 2
@@ -89,9 +94,9 @@ void loop()
       motor2.stop();
       motor3.stop();
       Serial.println("Rückwärts gestoppt");   
-      delay(10000);
+      delay(3000);
   }
-  // Drehen Wert = 3
+    // Drehen Wert = 3
   
   if (inDat == 3) {
       motor2.run(-255);
@@ -101,7 +106,7 @@ void loop()
       motor2.stop();
       motor3.stop();
       Serial.println("Drehen gestoppt");   
-      delay(10000);
+      delay(3000);
     }
 
     // Arm Hoch Wert = 4 
@@ -112,10 +117,10 @@ void loop()
       delay(400);
       motor1.stop();
       Serial.println("Arm Hoch gestoppt");   
-      delay(10000);
+      delay(3000);
     }
 
-        // Arm Runter Wert = 5 
+     // Arm Runter Wert = 5 
 
    if (inDat == 5) {
       motor1.run(-255);
@@ -123,7 +128,39 @@ void loop()
       delay(400);
       motor1.stop();
       Serial.println("Arm Runter gestoppt");   
-      delay(10000);
+      delay(3000);
+    }
+
+  int sensorState = lineFinder.readSensors();
+  switch(sensorState)
+  {
+  case S1_IN_S2_IN:
+    Serial.println("1 und 2 schwarz");
+    break;
+  case S1_IN_S2_OUT:
+    Serial.println("1 schwarz 2 weis");
+    break;
+  case S1_OUT_S2_IN:
+    Serial.println("1 weis 2 schwarz");
+    break;
+  case S1_OUT_S2_OUT:
+      Serial.println("1 und 2 weis");
+      
+      /*
+      inDat = 106;
+      motor2.run(-255);
+      motor3.run(255);
+      Serial.println("Rückwärts augefürt");
+      delay(2000);
+      motor2.stop();
+      motor3.stop();
+      Serial.println("Rückwärts gestoppt");   
+      delay(2000);
+      */
+      
+    break;
+  default:
+      break;
     }
   
 }
