@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Sql;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -21,12 +23,27 @@ namespace AutonomerRoboter
                 process.Kill();
             }
         }
+        
+        public DataTable WegAbfrage(string Start, string Ziel)
+        {
+            using(SqlConnection conn = new SqlConnection("Server=In21DB;Database=AutonomerRoboter;User Id=Admin;Password=Admin;"))
+            {
+                conn.Open();
+                string query = "exec Wegfindung " + Start +" " + Ziel;
+                SqlCommand cmd = new SqlCommand(query, conn);
+
+                DataTable dt = new DataTable();
+                dt.Load(cmd.ExecuteReader());
+                conn.Close();
+                return dt;
+            }
+        }
+       
     }
     internal class Program
     {
         static void Main(string[] args)
         {
-            Comms.BefehlGeben("", "", "");
         }
     }
 }
