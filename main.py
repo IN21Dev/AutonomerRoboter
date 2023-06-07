@@ -2,9 +2,24 @@ import pyodbc
 
 server = "localhost\sqlexpress"
 database = "RoboTest"
-username = "SA"
+username = "RoboAdmin"
 password = "TestAdmin"
+Command = []
 
-cnxn = pyodbc.connect('DRIVER={ODBC Driver 18 for SQL Server};SERVER='+server+';DATABASE='+database+';ENCRYPT=yes;UID='+username+';PWD='+ password)
+cnxn = pyodbc.connect('DRIVER={SQL Server};SERVER=localhost\sqlexpress;DATABASE=RoboTest;Trusted_Connection=yes;')
 cursor = cnxn.cursor()
 
+cursor.execute("select username, password from users")
+row = cursor.fetchall()
+if row:
+    print(row)
+
+
+file = open("C:\Service\Test.txt")
+for line in file:
+   CommandList = line.split(",")
+   [Command.append(x) for x in CommandList]
+
+print(Command)
+
+            
