@@ -44,6 +44,9 @@ def WegFindung(RoboID):
         cursor.execute("EXEC dbo.usp_Breadth_First " + WegInfo[0] + "," + WegInfo[1])
         QueryResult = cursor.fetchone()
         ListResult = [row for row in QueryResult]
+        ZielResult = ListResult[3]
+        ZielPfad = ZielResult.split(",")
+        Ziel = str(ZielPfad[1])
         NameResult = ListResult[4]
         NameCompare = NameResult.split(",")
         if(NameCompare[0] == (NameCompare[1] - 100)):   
@@ -57,8 +60,7 @@ def WegFindung(RoboID):
         else:
             return
     if(Erfolg == "Ja"):
-        #update Position
-        print
+        cursor.execute("UPDATE dbo.Roboter SET ZielPoint = " + Ziel + " WHERE ID = 1")
     elif(Erfolg == "Nein"):
         raise RuntimeError("Problem mit Roboter!!!")
     
@@ -82,7 +84,9 @@ def RoboMove(RoboID,Richtung):
                     return data
         else:
             print("POST request failed!")
-            return
+            return "Nein"
         
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
+    while True:
+        WegFindung(1)
