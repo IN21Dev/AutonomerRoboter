@@ -75,10 +75,11 @@ def RoboMove(RoboID,Richtung):
         response = requests.post(RoboAdresse, data=Richtung)  
         #Warte/Bearbeite Antwort
         if response.status_code == 200:
-            @app.route('/endpoint', methods=['POST'])
-            def handle_post_request():
-                data = request.form
-                return data
+            while True:
+                @app.route('/endpoint', methods=['POST'])
+                def handle_post_request():
+                    data = request.form
+                    return data
         else:
             print("POST request failed!")
             return
