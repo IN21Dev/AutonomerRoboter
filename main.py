@@ -42,7 +42,7 @@ def WegFindung(RoboID):
 def RoboMove(RoboID,Richtung):
         #Sende Befehl zu Roboter mit Richtung
         if(RoboID == 1):
-            RoboAdresse = ""
+            RoboAdresse = "192.168.88.232:85/endpoint"
         elif(RoboID == 2):
             RoboAdresse = ""
         elif(RoboID == 3):
