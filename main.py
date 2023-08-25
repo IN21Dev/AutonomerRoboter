@@ -1,8 +1,37 @@
 import pyodbc
 import requests
-from flask import Flask, request
+import urllib3
+import time
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from urllib.parse import urlparse, parse_qs
 
-app = Flask(__name__)
+class RequestHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        parsed_url = urlparse(self.path)
+        query_params = parse_qs(parsed_url.query)
+        
+        if 'argument' in query_params:
+            argument_value = query_params['argument'][0]
+            
+            print("Argument:", argument_value)
+            
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+            return argument_value
+        else:
+            self.send_response(400)
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+            self.wfile.write(b'Missing argument')
+            return "Nein"
+
+def run_server(server_class=HTTPServer, handler_class=RequestHandler, port=8000):
+    server_address = ('', port)
+    httpd = server_class(server_address, handler_class)
+    print(f"Starting server on port {port}")
+    httpd.serve_forever()
+
 CommandList = []
 cnxn = pyodbc.connect('DRIVER={SQL Server};SERVER=192.168.88.228\Storagebase;DATABASE=Storage Force;uid=sa;pwd=BSDGG.in21')
 cursor = cnxn.cursor()
@@ -25,13 +54,13 @@ def WegFindung(RoboID):
         NameResult = ListResult[4]
         NameCompare = NameResult.split(",")
         if(NameCompare[0] == (NameCompare[1] - 100)):   
-            Erfolg = RoboMove(RoboID,"N")
+            Erfolg = RoboMove(RoboID,"0")
         elif(NameCompare[1] == (NameCompare[0] -100)):
-            Erfolg = RoboMove(RoboID,"S")
+            Erfolg = RoboMove(RoboID,"1")
         elif(NameCompare[0] < NameCompare[1]):
-            Erfolg = RoboMove(RoboID,"O")
+            Erfolg = RoboMoveRight(RoboID,Ziel)
         elif(NameCompare[0] > NameCompare[1]):
-            Erfolg = RoboMove(RoboID,"W")
+            Erfolg = RoboMoveLeft(RoboID,Ziel)
         else:
             return
     if(Erfolg == "Ja"):
@@ -42,26 +71,65 @@ def WegFindung(RoboID):
 def RoboMove(RoboID,Richtung):
         #Sende Befehl zu Roboter mit Richtung
         if(RoboID == 1):
-            RoboAdresse = "192.168.88.232:85/endpoint"
+            RoboAdresse = "192.168.88.232:85/TEST?" + Richtung
         elif(RoboID == 2):
             RoboAdresse = ""
         elif(RoboID == 3):
             RoboAdresse = ""
         else:  
             return
-        response = requests.post(RoboAdresse, data=Richtung)  
+        resp = urllib3.request("GET", RoboAdresse)
         #Warte/Bearbeite Antwort
-        if response.status_code == 200:
-            while True:
-                @app.route('/endpoint', methods=['POST'])
-                def handle_post_request():
-                    data = request.form
-                    return data
+        if resp.status == 200:
+                while True:
+                    response = RequestHandler.do_GET()
+                    return response
+
+    
+def RoboMoveRight(RoboID,Ziel):
+        #Sende Befehl zu Roboter mit Richtung
+        if(RoboID == 1):
+            RoboAdresse = "192.168.88.232:85/?argument=2"
+        resp = urllib3.request("GET", RoboAdresse)
+        #Warte/Bearbeite Antwort
+        time.sleep(5.0)
+        RoboAdresse = "192.168.88.232:85/?argument=0"
+        resp = urllib3.request("GET", RoboAdresse)
+        if resp.status == 200:
+            cursor.execute("UPDATE dbo.Roboter SET ZielPoint = " + Ziel + " WHERE ID = 1")
         else:
-            print("POST request failed!")
+            print("GET Request Failed!")
+        RoboAdresse = "192.168.88.232:85/?argument=3"
+        time.sleep(5.0)
+        resp = urllib3.request("GET", RoboAdresse)
+        if resp.status == 200:
+            return
+        else:
+            print("GET Request Failed!")
+            return "Nein"
+        
+def RoboMoveLeft(RoboID,Ziel):
+        #Sende Befehl zu Roboter mit Richtung
+        if(RoboID == 1):
+            RoboAdresse = "192.168.88.232:85/?argument=3"
+        resp = urllib3.request("GET", RoboAdresse)
+        #Warte/Bearbeite Antwort
+        time.sleep(5.0)
+        RoboAdresse = "192.168.88.232:85/?argument=0"
+        resp = urllib3.request("GET", RoboAdresse)
+        if resp.status == 200:
+            cursor.execute("UPDATE dbo.Roboter SET ZielPoint = " + Ziel + " WHERE ID = 1")
+        else:
+            print("GET Request Failed!")
+        RoboAdresse = "192.168.88.232:85/?argument=2"
+        time.sleep(5.0)
+        resp = urllib3.request("GET", RoboAdresse)
+        if resp.status == 200:
+            return
+        else:
+            print("GET Request Failed!")
             return "Nein"
         
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80)
     while True:
         WegFindung(1)
