@@ -127,4 +127,4 @@ def RoboMoveLeft(RoboID,Ziel):
         
 if __name__ == '__main__':
     while True:
-        WegFindung(1)
+        WegFindung(2)
