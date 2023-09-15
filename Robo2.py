@@ -84,10 +84,14 @@ def RoboMove(RoboID,Richtung):
     
 def RoboMoveRight(RoboID,Ziel):
         #Sende Befehl zu Roboter mit Richtung
-        if(RoboID == 1):
-            RoboAdresse = "192.168.88.232:85/?argument=2"
+        if(RoboID == 2):
+            RoboAdresse = "192.168.88.232:85/?argument=3"
         resp = urllib3.request("GET", RoboAdresse)
         #Warte/Bearbeite Antwort
+        time.sleep(5.0)
+        resp = urllib3.request("GET", RoboAdresse)
+        time.sleep(5.0)
+        resp = urllib3.request("GET", RoboAdresse)
         time.sleep(5.0)
         RoboAdresse = "192.168.88.232:85/?argument=0"
         resp = urllib3.request("GET", RoboAdresse)
