@@ -25,7 +25,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(b'Missing argument')
             return ""
 
-def run_server(server_class=HTTPServer, handler_class=RequestHandler, port=8000):
+def run_server(server_class=HTTPServer, handler_class=RequestHandler, port=8001):
     server_address = ('', port)
     httpd = server_class(server_address, handler_class)
     print(f"Starting server on port {port}")
@@ -54,8 +54,12 @@ def WegFindung(RoboID):
         NameCompare = NameResult.split(",")
         if(NameCompare[0] == (NameCompare[1] - 100)):   
             Erfolg = RoboMove(RoboID,"0")
+            RoboTabUpdate(Ziel)
+            return
         elif(NameCompare[1] == (NameCompare[0] -100)):
             Erfolg = RoboMove(RoboID,"1")
+            RoboTabUpdate(Ziel)
+            return
         elif(NameCompare[0] < NameCompare[1]):
             Erfolg = RoboMoveRight(RoboID,Ziel)
         elif(NameCompare[0] > NameCompare[1]):
@@ -92,7 +96,7 @@ def RoboMoveRight(RoboID,Ziel):
         RoboAdresse = "192.168.88.232:85/?argument=0"
         resp = urllib3.request("GET", RoboAdresse)
         if resp.status == 200:
-            cursor.execute("UPDATE dbo.Roboter SET ZielPoint = " + Ziel + " WHERE ID = 1")
+            RoboTabUpdate(Ziel)
         else:
             print("GET Request Failed!")
         RoboAdresse = "192.168.88.232:85/?argument=3"
@@ -114,7 +118,7 @@ def RoboMoveLeft(RoboID,Ziel):
         RoboAdresse = "192.168.88.232:85/?argument=0"
         resp = urllib3.request("GET", RoboAdresse)
         if resp.status == 200:
-            cursor.execute("UPDATE dbo.Roboter SET ZielPoint = " + Ziel + " WHERE ID = 1")
+            RoboTabUpdate(Ziel)
         else:
             print("GET Request Failed!")
         RoboAdresse = "192.168.88.232:85/?argument=2"
@@ -125,7 +129,10 @@ def RoboMoveLeft(RoboID,Ziel):
         else:
             print("GET Request Failed!")
             return "Nein"
-        
+
+def RoboTabUpdate(Ziel):
+        cursor.execute("UPDATE dbo.Roboter SET ZielPoint = " + Ziel + " WHERE ID = 1")
+
 if __name__ == '__main__':
     while True:
         WegFindung(1)

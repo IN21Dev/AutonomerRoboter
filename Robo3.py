@@ -25,7 +25,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(b'Missing argument')
             return "Nein"
 
-def run_server(server_class=HTTPServer, handler_class=RequestHandler, port=8000):
+def run_server(server_class=HTTPServer, handler_class=RequestHandler, port=8003):
     server_address = ('', port)
     httpd = server_class(server_address, handler_class)
     print(f"Starting server on port {port}")
@@ -92,7 +92,7 @@ def RoboMoveRight(RoboID,Ziel):
         RoboAdresse = "192.168.88.232:85/?argument=0"
         resp = urllib3.request("GET", RoboAdresse)
         if resp.status == 200:
-            cursor.execute("UPDATE dbo.Roboter SET ZielPoint = " + Ziel + " WHERE ID = 1")
+            RoboTabUpdate(Ziel)
         else:
             print("GET Request Failed!")
         RoboAdresse = "192.168.88.232:85/?argument=3"
@@ -114,7 +114,7 @@ def RoboMoveLeft(RoboID,Ziel):
         RoboAdresse = "192.168.88.232:85/?argument=0"
         resp = urllib3.request("GET", RoboAdresse)
         if resp.status == 200:
-            cursor.execute("UPDATE dbo.Roboter SET ZielPoint = " + Ziel + " WHERE ID = 1")
+            RoboTabUpdate(Ziel)
         else:
             print("GET Request Failed!")
         RoboAdresse = "192.168.88.232:85/?argument=2"
@@ -126,6 +126,10 @@ def RoboMoveLeft(RoboID,Ziel):
             print("GET Request Failed!")
             return "Nein"
         
+
+def RoboTabUpdate(Ziel):
+        cursor.execute("UPDATE dbo.Roboter SET ZielPoint = " + Ziel + " WHERE ID = 3")
+
 if __name__ == '__main__':
     while True:
         WegFindung(3)
