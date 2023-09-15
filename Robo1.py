@@ -23,7 +23,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.send_header('Content-type', 'text/html')
             self.end_headers()
             self.wfile.write(b'Missing argument')
-            return "Nein"
+            return ""
 
 def run_server(server_class=HTTPServer, handler_class=RequestHandler, port=8000):
     server_address = ('', port)
@@ -76,9 +76,10 @@ def RoboMove(RoboID,Richtung):
         resp = urllib3.request("GET", RoboAdresse)
         #Warte/Bearbeite Antwort
         if resp.status == 200:
-                while True:
+                response = ""
+                while not response:
                     response = RequestHandler.do_GET()
-                    return response
+                return response
 
     
 def RoboMoveRight(RoboID,Ziel):

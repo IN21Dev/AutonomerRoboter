@@ -76,9 +76,10 @@ def RoboMove(RoboID,Richtung):
         resp = urllib3.request("GET", RoboAdresse)
         #Warte/Bearbeite Antwort
         if resp.status == 200:
-                while True:
+                response = ""
+                while not response:
                     response = RequestHandler.do_GET()
-                    return response
+                return response
 
     
 def RoboMoveRight(RoboID,Ziel):
