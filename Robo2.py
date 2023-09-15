@@ -129,6 +129,7 @@ def RoboMoveLeft(RoboID,Ziel):
 
 def RoboTabUpdate(Ziel):
         cursor.execute("UPDATE dbo.Roboter SET ZielPoint = " + Ziel + " WHERE ID = 2")
+        cursor.commit()
 
 if __name__ == '__main__':
     while True:
